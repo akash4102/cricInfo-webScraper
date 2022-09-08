@@ -5,6 +5,7 @@ const tempurl="https://www.espncricinfo.com";
 const request =require("request");
 const cheerio=require("cheerio");
 const { futimesSync } = require("fs");
+const AllMatchObj=require("./Allmatch");
 request(url,cb);
 function cb(err,request,html){
     if(err){
@@ -30,24 +31,27 @@ function extractLink(html){
         }
     }
     let link=tempurl+templink1;
-    getAllMatchesLink(link);
+    // getAllMatchesLink(link);
+    AllMatchObj.gAlmatches(link);
 }
-function getAllMatchesLink(url){
-    request(url,function(err,response,html){
-        if(err){
-            console.log(err);
-        }
-        else{
-            extractAllLinks(html);
-        }
-    })
-}
-function extractAllLinks(html){
-    let $=cheerio.load(html);
-    let anchorElem=$(".ds-grow.ds-px-4.ds-border-r.ds-border-line-default-translucent>a");
-    for(let i=0;i<anchorElem.length;i++){
-        let tt=$(anchorElem[i]).attr('href');
-        console.log(tempurl+tt);
-    }
+// function getAllMatchesLink(url){
+//     request(url,function(err,response,html){
+//         if(err){
+//             console.log(err);
+//         }
+//         else{
+//             extractAllLinks(html);
+//             // AllMatchObj.gAlmatches(html);
+//         }
+//     })
+// }
+// function extractAllLinks(html){
+//     let $=cheerio.load(html);
+//     let anchorElem=$(".ds-grow.ds-px-4.ds-border-r.ds-border-line-default-translucent>a");
+//     for(let i=0;i<anchorElem.length;i++){
+//         let tt=$(anchorElem[i]).attr('href');
+//         console.log(tempurl+tt);
+//         // AllMatchObj.gAlmatches(tempurl+tt);
+//     }
 
-}
+// }
