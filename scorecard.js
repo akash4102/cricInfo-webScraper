@@ -3,6 +3,9 @@ const url =
   "https://www.espncricinfo.com/series/ipl-2020-21-1210595/mumbai-indians-vs-chennai-super-kings-1st-match-1216492/full-scorecard";
 const request = require("request");
 const cheerio = require("cheerio");
+const path=require("path");
+const fs=require("fs");
+const xlsx=require("xlsx");
 function processScorecard(url){
     request(url, cb);
 }
@@ -59,11 +62,54 @@ function extractMatchDetails(html) {
             let sixes=$(allCols[6]).text().trim();
             let sr=$(allCols[7]).text().trim();
             console.log(`${playername} | ${runs} |  ${balls} |  ${fours} |  ${sixes} |  ${sr}`);
+            proccessPlayer(teamname,playername,runs,balls,fours,sixes,sr,aponentName,venue,date,result);
         }
 
     }
   }
   // console.log(htmlString);
+}
+function proccessPlayer(teamname,playername,runs,balls,fours,sixes,sr,aponentName,venue,date,result){
+  let teamPath=path.join(__dirname,"ipl",teamname);
+  dirCreater(teamPath);
+  let filePath=path.join(teamPath,playername+".xlsx");
+  let content=excelReader(filePath,playername);
+  let playerObj={
+    teamname,
+    playername,
+    runs,
+    balls,
+    fours,
+    sixes,
+    sr,
+    aponentName,
+    venue,
+    date,
+    result
+  }
+  content.push(playerObj);
+  excelWriter(filePath,content,playername);
+}
+function dirCreater(filePath){
+  if(fs.existsSync(filePath)==false){
+      fs.mkdirSync(filePath);
+  }
+}
+function excelWriter(filePath,json,sheetName){
+  let newWb=xlsx.utils.book_new();
+  let newWS=xlsx.utils.json_to_sheet(json);
+  xlsx.utils.book_append_sheet(newWb,newWS,sheetName);
+  xlsx.writeFile(newWb,filePath);
+}
+
+function excelReader(filePath,sheetName){
+  if(fs.existsSync(filePath)==false){
+    return [];
+  }
+  let wb=xlsx.readFile(filePath);
+  let exceldata=wb.Sheets[sheetName];
+  let ans=xlsx.utils.sheet_to_json(exceldata);
+  return ans;
 }
 module.exports={
     ps:processScorecard

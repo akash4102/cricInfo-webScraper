@@ -4,8 +4,12 @@ const tempurl="https://www.espncricinfo.com";
 //venue date opponedt result runs balls fours sixes sr
 const request =require("request");
 const cheerio=require("cheerio");
+const fs=require("fs");
+const path=require("path");
+const iplPath=path.join(__dirname,"ipl");
 const { futimesSync } = require("fs");
 const AllMatchObj=require("./Allmatch");
+dirCreater(iplPath);
 request(url,cb);
 function cb(err,request,html){
     if(err){
@@ -33,6 +37,11 @@ function extractLink(html){
     let link=tempurl+templink1;
     // getAllMatchesLink(link);
     AllMatchObj.gAlmatches(link);
+}
+function dirCreater(filePath){
+    if(fs.existsSync(filePath)==false){
+        fs.mkdirSync(filePath);
+    }
 }
 // function getAllMatchesLink(url){
 //     request(url,function(err,response,html){
